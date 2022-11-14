@@ -18,6 +18,14 @@ variable "instance_name" {
 provider "aws" {
   region  = "us-east-1"
   profile = "default"
+  default_tags {
+    tags ={
+      Project = "project"
+      CreatedAt =formatdate("YYYY-MM-DD",timestamp())
+      ManagedBy = "Terraform"
+      Owner = "Jemish Viradiya"
+    }
+  }
 }
 
 resource "aws_instance" "app_server" {
