@@ -1,38 +1,24 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.16"
-    }
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 
-  required_version = ">= 1.2.0"
-}
-
-variable "instance_name" {
-  description = "Name of the EC2 instance"
-  type        = string
-  default     = "Terraform"
-}
-
-provider "aws" {
-  region  = "us-east-1"
-  profile = "default"
-  default_tags {
-    tags ={
-      Project = "project"
-      CreatedAt =formatdate("YYYY-MM-DD",timestamp())
-      ManagedBy = "Terraform"
-      Owner = "Jemish Viradiya"
-    }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
+
+  owners = ["099720109477"] # Canonical
 }
 
-resource "aws_instance" "app_server" {
-  ami           = "ami-09d3b3274b6c5d4aa"
-  instance_type = "t2.micro"
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t3.micro"
 
   tags = {
-    Name = "Terraform"
+    Name = "HelloWorld"
   }
 }
